@@ -99,26 +99,26 @@ class FrameController extends EventEmitter
                     pinchingFinger = null
 
                 handModel =
-                    type : hand.type
+                    type: hand.type
                     extendedFingers:
-                        thumb : hand.thumb.extended
-                        indexFinger : hand.indexFinger.extended
-                        middleFinger : hand.middleFinger.extended
-                        ringerFinger : hand.ringFinger.extended
-                        pinky : hand.pinky.extended
-                    position: palmPosition
-                    grabStrength : hand.grabStrength
-                    pinchStrength : pinchStrength
-                    pinchingFinger : pinchingFinger
+                        thumb:          hand.thumb.extended
+                        indexFinger:    hand.indexFinger.extended
+                        middleFinger:   hand.middleFinger.extended
+                        ringerFinger:   hand.ringFinger.extended
+                        pinky:          hand.pinky.extended
+                    position:       palmPosition
+                    grabStrength:   hand.grabStrength
+                    pinchStrength:  pinchStrength
+                    pinchingFinger: pinchingFinger
                 @model.hands.push handModel
 
             # Gestures
             for gesture in frame.gestures
                 gestureModel =
-                    type : gesture.type
-                    duration : gesture.duration
-                    progress: gesture.progress
-                    state : gesture.state
+                    type:       gesture.type
+                    duration:   gesture.duration
+                    progress:   gesture.progress
+                    state:      gesture.state
                 @model.gestures.push gestureModel
             @emit 'update', @model
         console.log "Processed frame: ", frame.id

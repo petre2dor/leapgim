@@ -57,5 +57,7 @@ class ActionController
                         console.log 'No mouse action for ' + cmd.action
             when 'keyboard'
                 console.log 'keyboard action: ' + cmd.action
+            when 'system'
+                console.log 'system action: ' + cmd.action
 
 window.ActionController = ActionController

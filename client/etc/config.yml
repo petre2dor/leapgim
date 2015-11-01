@@ -1,33 +1,53 @@
 socket: 'tcp://127.0.0.1:8282'
 timeout: 500
 actions:
+    closeAndOpenFist:
+        type:   'system'
+        action: 'toggleKeyboardMode'
     mouse1Down:
-        type: 'mouse'
+        type:   'mouse'
         action: 'hold'
         target: 'left'
     mouse1Up:
-        type: 'mouse'
+        type:   'mouse'
         action: 'release'
         target: 'left'
     mouse2Down:
-        type: 'mouse'
+        type:   'mouse'
         action: 'hold'
         target: 'right'
     mouse2Up:
-        type: 'mouse'
+        type:   'mouse'
         action: 'release'
         target: 'right'
     mouseMove:
-        type: 'mouse'
+        type:   'mouse'
         action: 'move'
 signs:
+    openSteadyHand:
+        extendedFingers:
+            indexFinger:    true
+            middleFinger:   true
+            ringerFinger:   true
+            pinky:          true
+            thumb:          true
+        minTime:  3000
+        maxShake: 30
+    closedFist:
+        extendedFingers:
+            indexFinger:    false
+            middleFinger:   false
+            ringerFinger:     false
+            pinky:          false
+            thumb:          false
+        minTime: 500
     pinchIndex:
         pinch:
             pincher: 'indexFinger'
             min: 0.5
     pinchRing:
         pinch:
-            pincher: 'ringFinger'
+            pincher: 'ringerFinger'
             min: 0.5
     unpinch:
         pinch:
@@ -36,18 +56,21 @@ signs:
         grab:
             max: 0.4
 recipes:
+    toggleKeyboardMode:
+        action: 'closeAndOpenFist'
+        sign:   'openSteadyHand + closedFist + openSteadyHand'
     mouseMove:
         action: 'mouseMove'
-        sign: 'freeHand'
+        sign:   'freeHand'
     mouse1Down:
-        sign: 'pinchIndex'
+        sign:   'pinchIndex'
         action: 'mouse1Down'
     mouse1Up:
-        sign: 'unpinch'
+        sign:   'unpinch'
         action: 'mouse1Up'
     mouse2Down:
-        sign: 'pinchRing'
+        sign:   'pinchRing'
         action: 'mouse2Down'
     mouse2Up:
-        sign: 'unpinch'
+        sign:   'unpinch'
         action: 'mouse2Up'
