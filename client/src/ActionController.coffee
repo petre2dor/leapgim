@@ -42,14 +42,20 @@ class ActionController
     executeAction: (action) =>
         #console.log "Execute action: ", action
         cmd = @actions[action]
-        if(cmd.type == 'mouse')
-            if(cmd.action == 'hold')
-                button = cmd.target
-                @mouseButton 'down', button
-            if(cmd.action == 'release')
-                button = cmd.target
-                @mouseButton 'up', button
-            if(cmd.action == 'move')
-                @mouseMove(@position)
+        switch cmd.type
+            when 'mouse'
+                switch cmd.action
+                    when 'hold'
+                        button = cmd.target
+                        @mouseButton 'down', button
+                    when 'release'
+                        button = cmd.target
+                        @mouseButton 'up', button
+                    when 'move' 
+                        @mouseMove(@position)
+                    else
+                        console.log 'No mouse action for ' + cmd.action
+            when 'keyboard'
+                console.log 'keyboard action: ' + cmd.action
 
 window.ActionController = ActionController
