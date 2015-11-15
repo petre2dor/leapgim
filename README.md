@@ -100,3 +100,10 @@ Running
 ```
 npm start
 ```
+
+
+Licence
+-------
+GNU GENERAL PUBLIC LICENSE
+
+Version 3
