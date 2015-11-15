@@ -44,13 +44,13 @@
     "webexe_settings": {
         "linux-x32": false, 
         "export_dir": "output", 
-        "windows-x64": false, 
+        "windows-x64": true, 
         "uncompressed_folder": false, 
         "download_dir": "/home/petre/.local/share/Web2Executable/files/downloads", 
         "nw_compression_level": 9, 
         "mac-x32": false, 
-        "windows-x32": false, 
-        "mac-x64": true, 
+        "windows-x32": true, 
+        "mac-x64": false, 
         "nw_version": "0.12.3", 
         "force_download": false, 
         "linux-x64": false
