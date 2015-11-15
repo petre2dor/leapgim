@@ -1,11 +1,11 @@
 {EventEmitter} = require 'events'
 Leap = require 'leapjs'
 zmq = require 'zmq'
-YAML = require 'yamljs'
 
-config = YAML.load 'etc/config.yml'
+config = require '../etc/config.json'
+#console.log JSON.stringify config
 
-# Frame controller recieves leap frame data from leapd and parses it into a
+# Frame controller receives leap frame data from leapd and parses it into a
 # structured format we'll use later to configure gestures with
 class FrameController extends EventEmitter
 
@@ -73,8 +73,6 @@ class FrameController extends EventEmitter
         }
 
     processFrame: (frame) =>
-        # console.log "Processing frame..."
-
         if not frame.valid or frame.hands is null or frame.hands.length is 0
             # console.log "Invalid frame or no hands detected"
         else

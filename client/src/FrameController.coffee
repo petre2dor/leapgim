@@ -5,7 +5,7 @@ YAML = require 'yamljs'
 fs = require 'fs'
 
 # config = YAML.load 'etc/config-server.yml'
-config = YAML.parse fs.readFileSync 'etc/config-server.yml', 'utf8'
+config = YAML.parse fs.readFileSync 'etc/config.json', 'utf8'
 
 # Frame controller recieves leap frame data from leapd and parses it into a
 # structured format we'll use later to configure gestures with

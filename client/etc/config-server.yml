@@ -1,3 +1,0 @@
-socket: 'tcp://*:8282'
-interval: 50
-stabilize: true

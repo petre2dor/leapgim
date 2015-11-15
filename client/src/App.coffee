@@ -2,7 +2,7 @@ robot = require 'robotjs'
 zmq = require 'zmq'
 YAML = require 'yamljs'
 fs = require 'fs'
-defaultProfile = 'etc/config.yml'
+defaultProfile = 'etc/config.json'
 
 window.loadProfile = (profile) ->
 

@@ -7,4 +7,4 @@ var terminate = function() {
 
 fs.watch('./lib', terminate);
 fs.watch('./index.html', terminate);
-fs.watch('./etc/config.yml', terminate);
+fs.watch('./etc/config.json', terminate);

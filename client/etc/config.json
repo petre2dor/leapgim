@@ -1,5 +1,18 @@
-socket: 'tcp://127.0.0.1:8282'
-timeout: 2000
+{
+    "socket": "tcp://127.0.0.1:8282",
+    "actions": {
+
+    },
+    "signs": {
+
+    },
+    "recipes": {
+
+    }
+}
+
+
+/*timeout: 2000
 actions:
     alternateProfile:
         type: 'profile'
@@ -129,4 +142,4 @@ recipes:
          - 'pinchRing'
         action: 'mouse2Click'
         continuous: true
-        chargeDelay: 500
+        chargeDelay: 500*/

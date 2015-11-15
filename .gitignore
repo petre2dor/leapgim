@@ -4,3 +4,5 @@ build/
 npm-debug.log
 output_old/
 output/
+.idea/
+
