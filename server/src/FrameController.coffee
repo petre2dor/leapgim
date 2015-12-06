@@ -62,17 +62,34 @@ class GestureController
         if frame.gestures.length > 0
             for gesture in frame.gestures
                 switch gesture.type
-                    when "circle"
+                    when 'circle'
+                        pointableID = gesture.pointableIds[0];
+                        direction = frame.pointable(pointableID).direction;
+                        dotProduct = Leap.vec3.dot(direction, gesture.normal);
                         if extendedFingers.toString() == 'thumb,index'
-                            pointableID = gesture.pointableIds[0];
-                            direction = frame.pointable(pointableID).direction;
-                            dotProduct = Leap.vec3.dot(direction, gesture.normal);
-
                             if dotProduct > 0
                                 return 'oneFingerRotateClockwise'
                             else
                                 return 'oneFingerRotateContraClockwise'
-
+                        if extendedFingers.toString() == 'thumb,index,middle'
+                            if dotProduct > 0
+                                return 'twoFingersRotateClockwise'
+                            else
+                                return 'twoFingersRotateContraClockwise'
+                    when 'keyTap'
+                        return 'keyTap'
+                    when 'screenTap'
+                        return 'screenTap'
+                    when 'swipe'
+                        # Classify swipe as either horizontal or vertical
+                        isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1])
+                        #Classify as right-left or up-down
+                        if isHorizontal
+                            swipeDirection = if gesture.direction[0] > 0 then 'right' else 'left'
+                        else
+                            swipeDirection = if gesture.direction[1] > 0 then 'up' else 'down'
+                        return 'swipe' + swipeDirection[0].toUpperCase() + swipeDirection.slice(1)
+                        console.log(swipeDirection)
 #        search for openHandHover gesture
         if extendedFingers.toString() == 'thumb,index,middle,ring,pinky'
             hand = frame.hands[0]
