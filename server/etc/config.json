@@ -1,7 +1,15 @@
 {
   "socket": "tcp://127.0.0.1:8282",
   "interval": "50",
-  "stabilize": "true"
+  "stabilize": "true",
+  "gestures": {
+    "oneFingerRotateClockwise":{},
+    "oneFingerRotateContraClockwise":{},
+    "openHandHover":{
+      "time": 1000000,
+      "maxPalmMovement": 2
+    }
+  }
 }
 
 

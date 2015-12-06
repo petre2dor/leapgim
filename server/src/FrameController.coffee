@@ -1,169 +1,10 @@
-{EventEmitter} = require 'events'
-Leap = require 'leapjs'
-zmq = require 'zmq'
-
-config = require '../etc/config.json'
-#console.log JSON.stringify config
-
-# Frame controller receives leap frame data from leapd and parses it into a
-# structured format we'll use later to configure gestures with
-class FrameController extends EventEmitter
-
-    # A map to convert Finger type codes into descriptive names
-    nameMap : [
-        'thumb'
-        'indexFinger'
-        'middleFinger'
-        'ringFinger'
-        'pinky'
-    ]
-
-    constructor: ->
-        @model = []
-        console.log "Frame Controller initialized"
-
-    # TODO: return an array of pinching fingers if two fingers are both
-    # sufficiently close to the thumb.
-    findPinchingFingerType: (hand) =>
-        pincher = undefined
-        closest = 500
-        f = 1
-        while f < 5
-            current = hand.fingers[f]
-            distance = Leap.vec3.distance(hand.thumb.tipPosition, current.tipPosition)
-            if current != hand.thumb and distance < closest
-                closest = distance
-                pincher = current
-            f++
-        pincherName = @nameMap[pincher.type]
-        console.log "Pincher type: ", pincher.type
-        console.log "Pincher: " + pincherName
-        return pincherName
-
-    ###
-    # Produce x and y coordinates for a leap pointable.
-    ###
-
-    relative3DPosition: (frame, leapPoint) ->
-        iBox = frame.interactionBox
-        normalizedPoint = iBox.normalizePoint(leapPoint, false)
-
-        # Translate coordinates so that origin is in the top left corner
-        x = normalizedPoint[0]
-        y = 1 - (normalizedPoint[1])
-        z = normalizedPoint[2]
-
-        # Clamp
-        if x < 0
-            x = 0
-        if x > 1
-            x = 1
-        if y < 0
-            y = 0
-        if y > 1
-            y = 1
-        if z < -1
-            z = -1
-        if z > 1
-            z = 1
-        {
-            x: x
-            y: y
-            z: z
-        }
-
-    processFrame: (frame) =>
-        if not frame.valid or frame.hands is null or frame.hands.length is 0
-            # console.log "Invalid frame or no hands detected"
-        else
-
-            # console.log "Gestures: ", frame.gestures
-
-
-            @model =
-                hands : []
-                gestures : []
-                timestamp : frame.timestamp
-                #pointables : []
-            for hand in frame.hands
-                if(config.stabilize)
-                    console.log "Stabilized position in use!"
-                    position = hand.stabilizedPalmPosition
-                else
-                    position = hand.palmPosition
-                palmPosition = @relative3DPosition(frame, position)
-
-                pinchStrength = hand.pinchStrength
-                if pinchStrength > 0
-                    pinchingFinger = @findPinchingFingerType hand
-                else
-                    pinchingFinger = null
-
-                handModel =
-                    type : hand.type
-                    visible : hand.timeVisible
-                    confidence : hand.confidence
-                    extendedFingers:
-                        thumb : hand.thumb?.extended
-                        indexFinger : hand.indexFinger?.extended
-                        middleFinger : hand.middleFinger?.extended
-                        ringFinger : hand.ringFinger?.extended
-                        pinky : hand.pinky?.extended
-                    position: palmPosition
-                    grabStrength : hand.grabStrength
-                    pinchStrength : pinchStrength
-                    pinchingFinger : pinchingFinger
-                    speed : hand.palmVelocity
-                    pitch : hand.pitch
-                    roll  : hand.roll
-                    direction : hand.direction
-                @model.hands.push handModel
-
-            # # Basically fingers, but also pencils etc.
-            # for pointable of frame.pointables
-
-            #     if(config.stabilize)
-            #         fingerPosition = pointable.stabilizedTipPosition
-            #     else
-            #         fingerPosition = pointable.tipPosition
-            #         tipPosition = relative3DPosition(frame, fingerPosition)
-
-            #     pointableModel =
-            #         direction : pointable.direction
-            #         length : pointable.length
-            #         id : pointable.id
-            #         tool : pointable.tool
-            #         speed : pointable.tipVelocity
-            #     model.pointables.push pointableModel
-
-            # Gestures
-            for gesture in frame.gestures
-
-                if gesture.type is "circle"
-                    circleVector = frame.pointable(gesture.pointableIds[0]).direction
-
-                    console.log "Circle vector", circleVector
-                    console.log "Cirlce normal", gesture.normal
-
-                    gesture.direction = Leap.vec3.dot(circleVector, gesture.normal)
-
-                gestureModel =
-                    type : gesture.type
-                    duration : gesture.duration
-                    progress: gesture.progress
-                    state : gesture.state
-                    radius : gesture.radius
-                    center : gesture.center
-                    hands : gesture.handIds
-                    speed : gesture.speed
-                    startPosition : gesture.startPosition
-                    position : gesture.position
-                    direction : gesture.direction
-
-                @model.gestures.push gestureModel
-            @emit 'update', @model
-        # console.log "Processed frame: ", frame.id
-        return
+###
+  am o idee.
+  în loc să folosesc poziția curentă (și exactă), pot să folosesc media pozițiilor de pe ultimele x frame-uri
+###
+Leap    = require 'leapjs'
+zmq     = require 'zmq'
+config  = require '../etc/config.json'
 
 
 #
@@ -208,15 +49,81 @@ socket.monitor 500, 0
 # Config key: socket
 socket.bindSync config.socket
 
-frameController = new FrameController
 
-frameController.on 'update', (model)->
-    # console.log "Frame Controller update", model
-    socket.send [
-        'update'
-        JSON.stringify model
-    ]
-    return
+fingerMap = ["thumb", "index", "middle", "ring", "pinky"]
+
+class GestureController
+    constructor: ->
+        @currentPossibleGestures = {}
+
+    getGesture: (frame) =>
+        extendedFingers = @getExtendedFingers(frame)
+#        console.log 'extendedFingers: ' + extendedFingers.toString()
+        if frame.gestures.length > 0
+            for gesture in frame.gestures
+                switch gesture.type
+                    when "circle"
+                        if extendedFingers.toString() == 'thumb,index'
+                            pointableID = gesture.pointableIds[0];
+                            direction = frame.pointable(pointableID).direction;
+                            dotProduct = Leap.vec3.dot(direction, gesture.normal);
+
+                            if dotProduct > 0
+                                return 'oneFingerRotateClockwise'
+                            else
+                                return 'oneFingerRotateContraClockwise'
+
+#        search for openHandHover gesture
+        if extendedFingers.toString() == 'thumb,index,middle,ring,pinky'
+            hand = frame.hands[0]
+
+#            check if openHandHover is in @currentPossibleGestures
+            if @currentPossibleGestures.hasOwnProperty 'openHandHover'
+                initialPos  = @currentPossibleGestures.openHandHover.position
+                pos         = hand.stabilizedPalmPosition
+                max         = config.gestures.openHandHover.maxPalmMovement
+
+                console.log 'Initial x: ', initialPos[0]
+                console.log '    new x: ', pos[0]
+
+#                check if the hand was stable enough
+                if Math.abs(pos[0] - initialPos[0]) > max
+                    console.log 'movement on X greater that max'
+                    delete @currentPossibleGestures.openHandHover
+                else if Math.abs(pos[1] - initialPos[1]) > max
+                    console.log 'movement on Y greater that max'
+                    delete @currentPossibleGestures.openHandHover
+                else if Math.abs(pos[2] - initialPos[2]) > max
+                    console.log 'movement on Z greater that max'
+                    delete @currentPossibleGestures.openHandHover
+                else
+                    if config.gestures.openHandHover.time <= (frame.timestamp - @currentPossibleGestures.openHandHover.timestamp)
+                        return 'openHandHover'
+                    console.log 'still waiting'
+            else
+#                add openHandHover is in @currentPossibleGestures
+                @currentPossibleGestures.openHandHover = {
+                    'timestamp':    frame.timestamp
+                    'position':     hand.stabilizedPalmPosition
+                }
+                console.log 'start waiting for openHandHover', JSON.stringify(@currentPossibleGestures.openHandHover)
+
+#       todo search for another gesture...
+
+        return false
+
+    getExtendedFingers: (frame) =>
+        extendedFingers = []
+        if frame.hands.length > 0
+            hand = frame.hands[0]
+
+            for finger in hand.fingers
+                if finger.extended is on
+                    extendedFingers.push(fingerMap[finger.type])
+
+        return extendedFingers
+
+gestureController = new GestureController
 
 # Init Leap Motion
 leapController = new Leap.Controller (
@@ -235,9 +142,17 @@ consume = () ->
 
     # Skip invalid frame processing
     if frame is null
+        console.log 'invalid frame'
         return
-    frameController.processFrame(frame)
-    # console.log "Consumed frame ", frame.id
+    gesture = gestureController.getGesture(frame)
 
+    if gesture
+#        clear possible gestures
+        gestureController.currentPossibleGestures = {}
+#        send to client
+        socket.send [
+            'gesture'
+            gesture
+        ]
 # Config key: interval
 setInterval consume, config.interval

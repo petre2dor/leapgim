@@ -11,11 +11,11 @@
         "nw-gyp": "^0.12.3"
     }, 
     "author": "Petre Tudor, Timo Aho", 
-    "user-agent": "", 
+    "user-agent": "Leapgim",
     "window": {
         "fullscreen": false, 
         "resizable": false, 
-        "show": true, 
+        "show": true,
         "always-on-top": false, 
         "frame": true, 
         "title": "leapgim", 
@@ -25,8 +25,8 @@
         "visible": true, 
         "transparent": false, 
         "as_desktop": false, 
-        "width": 640, 
-        "position": "", 
+        "width": 640,
+        "position": "",
         "show_in_taskbar": true, 
         "height": 480, 
         "mac_icon": "", 
@@ -42,7 +42,8 @@
         "type": "git"
     }, 
     "dependencies": {
-        "coffee-script": "~1.10.0", 
+        "coffee-script": "^1.10.0",
+        "exec-sh": "^0.2.0",
         "robotjs": "^0.3.1", 
         "zmq": "^2.13.0",
         "nw": "^0.12.3"
