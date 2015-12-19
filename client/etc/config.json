@@ -12,9 +12,21 @@
         "lock": {
             "type": "keyboard",
             "keys": ["control", "alt", "l"]
+        },
+        "mute": {
+            "type": "keyboard",
+            "keys": ["control", "shift", "m"]
+        },
+        "suspend": {
+            "type": "keyboard",
+            "keys": ["control", "alt", "e"]
         }
     },
     "recipes": {
+        "mute": {
+            "gestures": ["openHand", "closeFist"],
+            "action": "mute"
+        },
         "lock": {
             "gestures": ["openHandHover"],
             "action":   "lock"
@@ -27,9 +39,9 @@
             "gestures": ["oneFingerRotateContraClockwise"],
             "action":   "volumeDown"
         },
-        "switchMachine": {
-            "gesture": ["openHand","closedFist"],
-            "action": "switchMachine"
+        "suspend": {
+            "gestures": ["openHand", "rock"],
+            "action": "suspend"
         }
     }
 }

@@ -8,7 +8,7 @@
         "hand gesture"
     ],
     "devDependencies": {
-        "nw-gyp": "^0.12.3"
+        "nw-gyp": "^0.13.0"
     }, 
     "author": "Petre Tudor, Timo Aho", 
     "user-agent": "Leapgim",
@@ -44,7 +44,7 @@
     "dependencies": {
         "coffee-script": "^1.10.0",
         "exec-sh": "^0.2.0",
-        "robotjs": "^0.3.1", 
+        "robotjs": "^0.3.4",
         "zmq": "^2.13.0",
         "nw": "^0.12.3"
     }, 

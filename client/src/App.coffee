@@ -58,11 +58,11 @@ socket.on 'connect', (fd, ep) ->
     console.log 'connect, endpoint:', ep
     socket.subscribe 'gesture'
     socket.on 'message', (topic, message) =>
-        try
-            if(topic.toString() == 'gesture')
-                gestureController.runGesture(message)
-        catch e
+        ### try ###
+        if(topic.toString() == 'gesture')
+            gestureController.runGesture(message)
+        ### catch e
             console.log "error", e.message
             console.log "trace", e.stack
-        return
+        return###
     return

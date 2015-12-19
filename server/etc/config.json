@@ -1,15 +1,23 @@
 {
-  "socket": "tcp://127.0.0.1:8282",
-  "interval": "50",
-  "stabilize": "true",
-  "gestures": {
-    "oneFingerRotateClockwise":{},
-    "oneFingerRotateContraClockwise":{},
-    "openHandHover":{
-      "time": 1000000,
-      "maxPalmMovement": 2
+    "socket": "tcp://127.0.0.1:8282",
+    "interval": "50",
+    "stabilize": "true",
+    "gestures": {
+        "oneFingerRotateClockwise":{},
+        "oneFingerRotateContraClockwise":{},
+        "openHand": {
+            "minTime":  200000,
+            "maxTime": 1000000,
+            "maxPalmMovement": 5
+        },
+        "openHandHover": {
+            "minTime": 2000000,
+            "maxTime": 3000000,
+            "maxPalmMovement": 5
+        },
+        "rock": {}
+
     }
-  }
 }
 
 
